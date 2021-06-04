@@ -3,7 +3,7 @@ export default async (req, res) => {
     const raw = await fetch(`https://api.github.com/repos/${user}/${project}/commits?per_page=100`, {
         method: 'GET',
         headers: {
-            'Authorization': 'token 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'
+            'Authorization': `token ${process.env.GH_TOKEN}`
         }
     })
     const log = await raw.json()
