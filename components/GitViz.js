@@ -1,15 +1,7 @@
 import TableRow from './TableRow'
 
-function daysIntoYear(dateStr) {
-    let date = new Date(dateStr)
-    return (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000
-}
-
-function daysIntoPeriod(startDate, newDate) {
-    const d1 = new Date(startDate)
-    const d2 = new Date(newDate)
-
-    return daysIntoYear(d2) - daysIntoYear(d1)
+function weeksBetween(startDate, newDate) {
+    return Math.round((new Date(newDate) - new Date(startDate)) / (7 * 24 * 60 * 60 * 1000))
 }
 
 export default function GitViz({ logs }) {
@@ -18,25 +10,25 @@ export default function GitViz({ logs }) {
         return new Date(b['commit']['author']['date']) - new Date(a['commit']['author']['date'])
     }).reverse()
 
-    const duration = daysIntoPeriod(logs[0]['commit']['author']['date'], logs[logs.length - 1]['commit']['author']['date'])
+    const duration = weeksBetween(logs[0]['commit']['author']['date'], logs[logs.length - 1]['commit']['author']['date'])
 
     // Populate the author data
     const startDate = new Date(logs[0]['commit']['author']['date'])
     let authors = new Map()
     logs.forEach(log => {
-        let day = daysIntoPeriod(startDate, log['commit']['author']['date'])
+        let week = weeksBetween(startDate, log['commit']['author']['date'])
 
         if(!authors.has(log['commit']['author']['name'])) {
             let dates = new Map()
-            dates.set(day, 1)
+            dates.set(week, 1)
             authors.set(log['commit']['author']['name'], dates)
         } else {
             let dates = authors.get(log['commit']['author']['name'])
             let count = 0
-            if(dates.has(day)) {
-                count = dates.get(day)
+            if(dates.has(week)) {
+                count = dates.get(week)
             }
-            dates.set(day, count + 1)
+            dates.set(week, count + 1)
             authors.set(log['commit']['author']['name'], dates)
         }
     })

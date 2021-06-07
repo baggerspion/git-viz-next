@@ -1,16 +1,32 @@
 export default async (req, res) => {
-    const {query: {user, project}} = req 
-    const raw = await fetch(`https://api.github.com/repos/${user}/${project}/commits?per_page=100`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `token ${process.env.GH_TOKEN}`
-        }
-    })
-    const log = await raw.json()
+    // Setup access to GitHub
+    const github = require('octonode')
+    const client = github.client(process.env.GH_TOKEN)
 
-    if(!log) {
+    // Grab the required query params from the request
+    const {query: {owner, repo}} = req 
+    const ghrepo = client.repo(`${owner}/${repo}`)
+    var commits = new Array()
+    var page = 0
+
+    while(true) {
+        var data = await ghrepo.commitsAsync({ 
+            page: ++page,
+            per_page: 100 
+        })
+        if(data[0].length == 0) {
+            break
+        } else {
+            commits = commits.concat(data[0])
+            if(data[0].length < 100) {
+                break
+            }
+        }
+    }
+
+    if(!data) {
         res.status(404).send({error: "Log not found!"})
     } else {
-        res.status(200).send({result: log})
+        res.status(200).send({result: commits})
     }
 }
