@@ -1,5 +1,4 @@
 import GitViz from '../components/GitViz'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 
@@ -19,8 +18,7 @@ export default function Home() {
     } else {
         return (
             <>
-            <p>You must specify 'project' and 'user' parameters in the URL.</p>
-            <p>e.g. <Link href="https://https://git-viz-next.vercel.app/?user=vercel&project=next.js"><a>https://giz-viz-next.vercel.app/?user=vercel&project=next.js</a></Link></p>
+            <p>You must specify 'owner' and 'repo' parameters in the URL.</p>
             </>
         )
     }
