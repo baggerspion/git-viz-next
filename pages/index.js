@@ -9,7 +9,7 @@ export default function Home() {
     if(owner && repo) {
         const {data, error} = useSWR(`/api/history?owner=${owner}&repo=${repo}`)
 
-        if(error) return <h1>Problem</h1>
+        if(error) return <h1>Problem: {error}</h1>
         if(!data) return <p>Loading... (this might take some time)</p>
 
         if(data) return (
